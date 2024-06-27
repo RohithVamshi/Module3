@@ -1,6 +1,28 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 20.06.2024 09:24:32
+// Design Name: 
+// Module Name: module3_2_tb
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
 module module3_2_tb();
-  parameter Data_width = 8;  
-  parameter Depth = 16  ;    
+  parameter Data_width = 16;  
+  parameter Depth =10  ;    
 
     reg clk;
     reg rst;
@@ -12,8 +34,8 @@ module module3_2_tb();
     wire s_ready;
 
     // Configuration input
-    reg [Data_width-1:0] k=1; 
-    reg [Data_width-1:0] len=8;
+    reg [Data_width-1:0] k=4; 
+    reg [Data_width-1:0] len=10;
 
     // AXI Stream Master Interface
     wire [Data_width-1:0] m_data;
@@ -48,36 +70,29 @@ initial begin
      s_valid =1;;
     forever begin
         // 1st frame
-        repeat(len)@(posedge clk)s_data = s_data +1;  
+        repeat(len)@(posedge clk)s_data = s_data +2;  
      end
     @(posedge clk)s_data =0;
     repeat(k)@(posedge clk);
     s_valid =0;
 end
 
-initial 
-begin
-s_last = 0;
-#360
-s_last =1;
-#40
-s_last=0;
-#360
-s_last =1;
-#40
-s_last=0;
-#360
-s_last =1;
-#40
-s_last=0;
-#360
-s_last =1;
+initial begin
+     s_last =0; 
+    repeat(2)@(posedge clk)s_last = 0; 
+    forever begin
+        repeat(len-1) @(posedge clk) s_last =0;
+        @(posedge clk) s_last = 1;
+        @(negedge clk) s_last =0;
+    end
 end
 
 initial begin
     m_ready = 1;
-    repeat(85)@(posedge clk) m_ready =1;
+    repeat(45)@(posedge clk) m_ready =1;
     
 end
 
+
+ 
 endmodule
